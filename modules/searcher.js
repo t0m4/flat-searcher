@@ -17,6 +17,8 @@ const { send: sendFbMessage } = require('../services/fbmessage');
 
 const adapters = require('./adapters');
 
+const FREQUENCY = process.env.FREQUENCY ? parseInt(process.env.FREQUENCY, 10) : 10 * 60 * 1000;
+
 const scrap = Promise.coroutine(function* scrap(params) {
   let results = {};
 
@@ -52,7 +54,7 @@ const start = Promise.coroutine(function* (params) {
     yield* alert(yield getLatestFlats(lastRun));
     yield updateLastRun();
 
-    yield Promise.delay(60 * 1000);
+    yield Promise.delay(FREQUENCY);
     console.log('running again');
     start(params).then();
   } catch(err) {
