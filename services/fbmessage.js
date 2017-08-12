@@ -8,7 +8,7 @@ function login() {
   return new Promise((resolve, reject) => {
     if ((!process.env.FB_EMAIL || !process.env.FB_PASSWORD) && !process.env.APP_STATE) return resolve();
     let credentials = {};
-    if (process.env.APP_STATE) credentials = { appState: process.env.APP_STATE };
+    if (process.env.APP_STATE) credentials = { appState: JSON.parse(process.env.APP_STATE) };
     else credentials = { email: process.env.FB_EMAIL, password: process.env.FB_PASSWORD };
 
     return getApi(credentials, (err, api) => {
