@@ -17,7 +17,7 @@ const { send: sendFbMessage } = require('../services/fbmessage');
 
 const adapters = require('./adapters');
 
-const FREQUENCY = process.env.FREQUENCY ? parseInt(process.env.FREQUENCY, 10) : 10 * 60 * 1000;
+const FREQUENCY = process.env.FREQUENCY ? parseInt(process.env.FREQUENCY, 10) : 30 * 60 * 1000;
 
 const scrap = Promise.coroutine(function* scrap(params) {
   let results = {};
@@ -32,7 +32,7 @@ const scrap = Promise.coroutine(function* scrap(params) {
   }
 
   _.forEach(results, (items, source) => {
-    console.info('result', { source, hits: items.length });
+    console.info({ source, hits: items.length, params });
   });
 });
 
