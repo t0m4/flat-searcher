@@ -27,14 +27,19 @@ function* storeChunk(source, items, coll) {
     item.uniqid = uniqid;
     item.source = source;
     yield coll.update({ uniqid }, { $set: item }, { upsert: true });
-    console.info('Item saved', item);
   }
 }
 
-function* getAllForSource(source) {
+function getAllForSource(source) {
   if (!source) return;
   const coll = getCollection('flats');
   return coll.find({ source }).toArray();
+}
+
+function getFlats(match) {
+  if (!match || _.isEmpty(match)) throw new Error('match must be not empty');
+  const coll = getCollection('flats');
+  return coll.find(match, {}, { sort: { creaAt: -1 } }).toArray();
 }
 
 function* storeFlats(source, flats) {
@@ -53,14 +58,39 @@ function* storeFlats(source, flats) {
   }
 }
 
-function cleanFlats() {
+function clearFlats() {
   const coll = getCollection('flats');
   return coll.remove({});
 }
 
+function getUser(username, password) {
+  const coll = getCollection('users');
+  return coll.findOne({ username, password });
+}
+
+function updateLastRun() {
+  const coll = getCollection('app');
+  return coll.update({ type: 'iterations' }, { $set: { type: 'iterations', lastRun: new Date() } }, { upsert: true });
+}
+
+function getLastRun() {
+  const coll = getCollection('app');
+  return coll.findOne({ type: 'iterations' })
+    .then((res) => res && res.lastRun || new Date());
+}
+
+function* getLatestFlats(fromDate) {
+  return getFlats({ creaAt: { $gte: new Date(fromDate) } });
+};
+
 module.exports = {
   connect,
+  getUser,
   storeFlats: Promise.coroutine(storeFlats),
-  getAllForSource: Promise.coroutine(getAllForSource),
-  cleanFlats
+  getLatestFlats: Promise.coroutine(getLatestFlats),
+  getAllForSource,
+  clearFlats,
+  getFlats,
+  updateLastRun,
+  getLastRun
 };

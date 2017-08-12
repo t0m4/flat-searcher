@@ -22,6 +22,11 @@ function getNext($) {
   return $nextCandidate.find('a').attr('href');
 }
 
+function getTotal($) {
+  const total = _.trim($('.re-all-count > strong.jfg-badge').text());
+  return parseInt(total.split(' ').join(''), 10);
+}
+
 function parseElement($) {
   return (index, $element) => {
     return _.mapValues(PROPS, (prop) => {
@@ -35,8 +40,9 @@ function parse(response) {
   const $elements = $('.main-box-body.search-list-container').find('[itemprop="itemListElement"]');
   const parsed = $elements.map(parseElement($)).toArray();
   const next = getNext($);
+  const total = getTotal($);
 
-  return Promise.resolve({ data: parsed, next });
+  return Promise.resolve({ data: parsed, next, total });
 }
 
 module.exports = parse;

@@ -3,17 +3,15 @@ const Promise = require('bluebird');
 const _ = require('lodash');
 
 const {
-  connect,
   storeFlats,
   getAllForSource,
-  cleanFlats
-} = require('./services/mongo');
+  cleanFlats,
+  updateLastRun,
+  getLastRun,
+  getFlats,
+  getLatestFlats
+} = require('../services/mongo');
 const adapters = require('./adapters');
-
-const startUp = Promise.coroutine(function* startUp() {
-  yield connect();
-  return cleanFlats()
-});
 
 const scrap = Promise.coroutine(function* scrap(params) {
   let results = {};
@@ -28,23 +26,30 @@ const scrap = Promise.coroutine(function* scrap(params) {
   }
 
   _.forEach(results, (items, source) => {
-    console.info('source', source);
-    console.info(items);
+    console.info('result', { source, hits: items.length });
   });
 });
 
+function alert(items = []) {
+  if (_.isEmpty(items)) return;
+
+  console.log('Alert: ', items);
+}
 
 const start = Promise.coroutine(function* (params) {
   yield scrap(params);
+  const lastRun = yield getLastRun();
+  alert(yield getLatestFlats(lastRun));
+  yield updateLastRun();
 
   yield Promise.delay(15 * 60 * 1000);
   console.log('running again');
   start(params).then();
 });
 
-function* searcher(params) {
-  yield startUp();
+function searcher(params) {
   start(params).then();
+  return Promise.resolve();
 }
 
-module.exports = Promise.coroutine(searcher);
+module.exports = searcher;

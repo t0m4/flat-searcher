@@ -4,8 +4,9 @@ const _ = require('lodash');
 function minMaxFilter(toCompareWith, config) {
   if (!config.min && !config.max) return true;
   if (isNaN(toCompareWith)) return false;
-  if (config.min && toCompareWith <= config.min) return false;
-  if (config.max && toCompareWith >= config.max) return false;
+  if (config.min && toCompareWith < config.min) return false;
+  if (config.max && toCompareWith > config.max) return false;
+
   return true;
 }
 
@@ -43,13 +44,17 @@ const CONDITIONS = {
 }
 
 function runCondition(params, item) {
-  return (fn, key) => fn(_.get(params, key, {}), item);
+  return (fn, key) => {
+    const res = fn(_.get(params, key, {}), item);
+    return res;
+  };
 }
 
 function filter(params, arr, existingIds) {
   return _.filter(arr, item => {
     if (_.includes(existingIds, item.id)) return false;
-    return _.every(_.map(CONDITIONS, runCondition(params, item)))
+    const conditions = _.pick(CONDITIONS, _.keys(params));
+    return _.every(_.map(conditions, runCondition(params, item)))
   });
 }
 

@@ -9,7 +9,7 @@ const makeRequest = require('./request-and-parse');
 
 const details = require('./details');
 
-const URL = 'https://ingatlan.jofogas.hu/budapest/lakas/felujitott+jo-allapotu+uj-epitesu+ujszeru/van-1?hi=1&ros=3&st=u';
+const BASE_URL = 'https://ingatlan.jofogas.hu/budapest/felujitott+jo-allapotu+uj-epitesu+ujszeru/lakas?f=a&sp=1&hi=1&st=u';
 
 function factory(url, params, existingIds) {
   let nextUrl = url;
@@ -26,25 +26,40 @@ function factory(url, params, existingIds) {
       });
 
       const filteredData = filter(params, populated, existingIds);
-
-      return { value: filteredData, done: !nextUrl };
+      const data = {
+        data: filteredData,
+        total: parsed.total
+      };
+      return { value: data, done: !nextUrl };
     })
   };
 }
 
-const getData = Promise.coroutine(function* (params, existingIds) {
+function constructUrl(params) {
+  const getParams = [];
+  if (_.get(params, 'rooms.max')) getParams.push(`roe=${params.rooms.max}`);
+  if (_.get(params, 'rooms.min')) getParams.push(`ros=${params.rooms.min}`);
+  return getParams.length ? `${BASE_URL}&${getParams.join('&')}` : BASE_URL;
+}
+
+const getData = Promise.coroutine(function* (url, params, existingIds) {
   const now = Date.now();
   let data = [];
   let newData;
   let shouldRun = true;
+  let total;
 
-  const dataFactory = factory(URL, params, existingIds);
+  const dataFactory = factory(url, params, existingIds);
   let page = 1;
   while(shouldRun) {
     newData = yield dataFactory.next();
     shouldRun = !newData.done;
-    //shouldRun = false;
-    data = data.concat(newData.value);
+    if (!total) {
+      total = newData.value.total;
+      console.info('Total: ', total);
+    }
+
+    data = data.concat(newData.value.data);
     page++;
   }
   console.info(`Jofogas: processed ${page} page(s) with ${data.length} hits in ${Date.now() - now}ms`);
@@ -55,9 +70,10 @@ const getData = Promise.coroutine(function* (params, existingIds) {
 function* search(params, existing) {
   let existingIds = [];
   if (existing) existingIds = _.map(existing, 'id');
-  console.info('Search started on Jofogas - ingatlanok');
-  const response = yield makeRequest(URL);
-  const data = yield getData(params, existingIds);
+  const url = constructUrl(params);
+  console.info('Search started on Jofogas - ingatlanok', url);
+  const response = yield makeRequest(url);
+  const data = yield getData(url, params, existingIds);
 
   console.info(`Search finished on Jofogas - ingatlanok`);
   return data;

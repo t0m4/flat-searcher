@@ -9,10 +9,14 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "basic-auth": "^1.1.0",
     "bluebird": "^3.5.0",
+    "body-parser": "^1.17.2",
     "cheerio": "^1.0.0-rc.2",
+    "express": "^4.15.4",
     "iconv": "^2.3.0",
     "lodash": "^4.17.4",
+    "mongo-querystring": "^4.1.1",
     "mongodb": "^2.2.31",
     "request": "^2.81.0",
     "request-promise": "^4.2.1"
