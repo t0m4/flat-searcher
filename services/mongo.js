@@ -3,7 +3,7 @@ const { MongoClient } = require('mongodb');
 const Promise = require('bluebird');
 const _ = require('lodash');
 
-const DB_URL = 'mongodb://localhost:27017/flat-searcher'
+const DB_URL = process.env.MONGO_URL || 'mongodb://localhost:27017/flat-searcher';
 
 let db;
 
@@ -26,6 +26,7 @@ function* storeChunk(source, items, coll) {
     const uniqid = `${source}:${item.id}`;
     item.uniqid = uniqid;
     item.source = source;
+    item.creaAt = new Date();
     yield coll.update({ uniqid }, { $set: item }, { upsert: true });
   }
 }
@@ -81,7 +82,12 @@ function getLastRun() {
 
 function* getLatestFlats(fromDate) {
   return getFlats({ creaAt: { $gte: new Date(fromDate) } });
-};
+}
+
+function getNotifications() {
+  const coll = getCollection('app');
+  return coll.findOne({ type: 'notifications' });
+}
 
 module.exports = {
   connect,
@@ -92,5 +98,6 @@ module.exports = {
   clearFlats,
   getFlats,
   updateLastRun,
-  getLastRun
+  getLastRun,
+  getNotifications
 };

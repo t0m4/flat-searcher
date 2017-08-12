@@ -14,6 +14,7 @@
     "body-parser": "^1.17.2",
     "cheerio": "^1.0.0-rc.2",
     "express": "^4.15.4",
+    "facebook-chat-api": "github:schmavery/facebook-chat-api",
     "iconv": "^2.3.0",
     "lodash": "^4.17.4",
     "mongo-querystring": "^4.1.1",

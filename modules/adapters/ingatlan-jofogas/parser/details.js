@@ -49,7 +49,7 @@ function parse(response) {
   const htmlDetailsObject = htmlDetailObj($)
 
   const parsed = parseElement($, $element);
-  parsed.creaAt = new Date(htmlDetailsObject.date);
+  parsed.date = new Date(htmlDetailsObject.date);
   return Promise.resolve({ data: parsed });
 }
 

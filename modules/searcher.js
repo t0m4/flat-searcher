@@ -9,8 +9,12 @@ const {
   updateLastRun,
   getLastRun,
   getFlats,
-  getLatestFlats
+  getLatestFlats,
+  getNotifications
 } = require('../services/mongo');
+
+const { send: sendFbMessage } = require('../services/fbmessage');
+
 const adapters = require('./adapters');
 
 const scrap = Promise.coroutine(function* scrap(params) {
@@ -30,21 +34,31 @@ const scrap = Promise.coroutine(function* scrap(params) {
   });
 });
 
-function alert(items = []) {
+function* alert(items = []) {
   if (_.isEmpty(items)) return;
+  const notifs = yield getNotifications();
 
-  console.log('Alert: ', items);
+  const messengerRecipients = _.get(notifs, 'messenger.recipients', []);
+
+  const message = `Uj feltoltott kiado lakasok: \r\n${items.map(item => item.link).join('\r\n')}`;
+
+  return Promise.all(_.map(messengerRecipients, recipient => sendFbMessage(message, recipient)));
 }
 
 const start = Promise.coroutine(function* (params) {
-  yield scrap(params);
-  const lastRun = yield getLastRun();
-  alert(yield getLatestFlats(lastRun));
-  yield updateLastRun();
+  try {
+    yield scrap(params);
+    const lastRun = yield getLastRun();
+    yield* alert(yield getLatestFlats(lastRun));
+    yield updateLastRun();
 
-  yield Promise.delay(15 * 60 * 1000);
-  console.log('running again');
-  start(params).then();
+    yield Promise.delay(60 * 1000);
+    console.log('running again');
+    start(params).then();
+  } catch(err) {
+    console.error(err);
+    start(params).then();
+  }
 });
 
 function searcher(params) {

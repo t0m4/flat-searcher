@@ -9,6 +9,7 @@ const enableDestroy = require('./modules/enable-destroy');
 const MongoQs = require('mongo-querystring');
 const qsParser = new MongoQs();
 
+const { login } = require('./services/fbmessage');
 const searcher = require('./modules/searcher');
 
 const { connect, getUser, getAllForSource, getFlats, clearFlats, getLatestFlats } = require('./services/mongo');
@@ -27,7 +28,7 @@ const DEFAULT_PARAMS = {
     max: 100000,
     min: 30000
   },
-  baclony: true
+  balcony: true
 };
 
 let PARAMS = {};
@@ -101,15 +102,17 @@ function startApp() {
   });
 }
 
-function startUp() {
-  return Promise.all([
-    searcher(PARAMS),
+function* startUp() {
+  yield Promise.all([
+    login(),
     startApp()
   ]);
+
+  return searcher(PARAMS);
 }
 
 connect().
-  then(startUp)
+  then(Promise.coroutine(startUp))
   .then(() => {
     console.log('started');
   })
