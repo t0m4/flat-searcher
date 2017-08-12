@@ -28,7 +28,7 @@ const DEFAULT_PARAMS = {
     max: 100000,
     min: 30000
   },
-  balcony: true
+  //balcony: true
 };
 
 let PARAMS = {};
