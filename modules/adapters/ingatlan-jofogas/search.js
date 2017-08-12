@@ -21,6 +21,7 @@ function factory(url, params, existingIds) {
       nextUrl = parsed.next;
 
       const populated = yield Promise.map(parsed.data, (data) => {
+        if (_.includes(existingIds, data.id)) return Promise.resolve(data);
         return details(data)
           .then(detailsData => _.defaults(data, detailsData.data));
       });
