@@ -1,7 +1,7 @@
 'use strict';
 const Promise = require('bluebird');
 const getApi = require('facebook-chat-api');
-
+const _ =require('lodash');
 let fbApi;
 
 function login() {
@@ -21,13 +21,22 @@ function login() {
   });
 }
 
-function* send(msg, to) {
-  if (!fbApi) yield login();
-  console.info('Sending message...');
-  return fbApi.sendMessageAsync(msg, to);
+function send(msg, to) {
+  return new Promise((resolve, reject) => {
+    if (!fbApi) return resolve();
+    console.log('Sending message...');
+    return fbApi.sendMessage(msg, to, (err, msgInfo) => {
+      if (err) {
+        console.error(err);
+        return resolve();
+      }
+      return resolve();
+    });
+  });
 }
+
 
 module.exports = {
   login,
-  send: Promise.coroutine(send)
+  send
 };

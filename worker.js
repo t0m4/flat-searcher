@@ -1,7 +1,7 @@
 'use strict';
 const Promise = require('bluebird');
 
-const { login } = require('./services/fbmessage');
+const { login, send } = require('./services/fbmessage');
 const searcher = require('./modules/searcher');
 
 const { connect } = require('./services/mongo');
