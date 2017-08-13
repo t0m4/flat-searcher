@@ -16,11 +16,12 @@
     "body-parser": "^1.17.2",
     "cheerio": "^1.0.0-rc.2",
     "express": "^4.15.4",
-    "facebook-chat-api": "github:schmavery/facebook-chat-api",
+    "facebook-chat-api": "^1.4.0",
     "iconv": "^2.3.0",
     "lodash": "^4.17.4",
     "mongo-querystring": "^4.1.1",
     "mongodb": "^2.2.31",
+    "promise-retry": "^1.1.1",
     "request": "^2.81.0",
     "request-promise": "^4.2.1"
   }

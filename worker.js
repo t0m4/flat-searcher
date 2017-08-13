@@ -40,6 +40,7 @@ function* startUp() {
 connect()
   .then(Promise.coroutine(startUp))
   .catch(err => console.error(err))
+  .then(() => Promise.delay(5000))
   .then(() => {
     console.info('finished');
     process.exit(0);

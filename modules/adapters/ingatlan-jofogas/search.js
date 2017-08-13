@@ -10,6 +10,7 @@ const makeRequest = require('./request-and-parse');
 const details = require('./details');
 
 const BASE_URL = 'https://ingatlan.jofogas.hu/budapest/felujitott+jo-allapotu+uj-epitesu+ujszeru/lakas?f=a&sp=1&hi=1&st=u';
+const PER_PAGE_ITEM = 25;
 
 function factory(url, params, existingIds) {
   let nextUrl = url;
@@ -23,7 +24,11 @@ function factory(url, params, existingIds) {
       const populated = yield Promise.map(parsed.data, (data) => {
         if (_.includes(existingIds, data.id)) return Promise.resolve(data);
         return details(data)
-          .then(detailsData => _.defaults(data, detailsData.data));
+          .then(detailsData => _.defaults(data, detailsData.data))
+          .catch((err) => {
+            console.error(err);
+            return data;
+          });
       });
 
       const filteredData = filter(params, populated, existingIds);
@@ -55,13 +60,11 @@ const getData = Promise.coroutine(function* (url, params, existingIds) {
   while(shouldRun) {
     newData = yield dataFactory.next();
     shouldRun = !newData.done;
-    if (!total) {
-      total = newData.value.total;
-      console.info('Total: ', total);
-    }
+    total = Math.ceil(newData.value.total / PER_PAGE_ITEM);
 
     data = data.concat(newData.value.data);
-    page++;
+    console.info(`Jofogas: Progress ${page}/${total} pages.`);
+    if (shouldRun) page++;
   }
   console.info(`Jofogas: processed ${page} page(s) with ${data.length} hits in ${Date.now() - now}ms`);
   return data;

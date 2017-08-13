@@ -45,15 +45,11 @@ function* alert(items = []) {
   return Promise.all(_.map(messengerRecipients, recipient => sendFbMessage(message, recipient)));
 }
 
-const run = Promise.coroutine(function* run(params) {
+function* run(params) {
   yield scrap(params);
   const lastRun = yield getLastRun();
   yield* alert(yield getLatestFlats(lastRun));
   return updateLastRun();
-});
-
-function searcher(params) {
-  return run(params);
 }
 
-module.exports = searcher;
+module.exports = Promise.coroutine(run);

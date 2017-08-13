@@ -3,10 +3,14 @@ const rp = require('request-promise');
 const Iconv  = require('iconv').Iconv;
 const iconv = new Iconv('ISO-8859-2', 'UTF-8');
 
+const handleRetry = require('../../retry');
+
 function makeRequest(url) {
-  return rp.get({
-    url,
-    encoding: null
+  return handleRetry(() => {
+    return rp.get({
+      url,
+      encoding: null
+    });
   })
   .then(res => {
     const buffer = iconv.convert(res);
