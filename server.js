@@ -1,5 +1,6 @@
 'use strict';
 const Promise = require('bluebird');
+const _ = require('lodash');
 
 const basicAuth = require('basic-auth');
 const express = require('express');
@@ -9,35 +10,7 @@ const enableDestroy = require('./modules/enable-destroy');
 const MongoQs = require('mongo-querystring');
 const qsParser = new MongoQs();
 
-const { login } = require('./services/fbmessage');
-const searcher = require('./modules/searcher');
-
 const { connect, getUser, getAllForSource, getFlats, clearFlats, getLatestFlats } = require('./services/mongo');
-
-const DEFAULT_PARAMS = {
-  rooms: {
-    max: 1
-  },
-  halfRooms: {
-    max: 1
-  },
-  location: {
-    districts: ['v.', 'vi.', 'vii.', 'viii.']
-  },
-  price: {
-    max: 100000,
-    min: 30000
-  },
-  //balcony: true
-};
-
-let PARAMS = {};
-
-try {
-  const PARAMS = JSON.parse(process.env.PARAMS);
-} catch(err) {
-  PARAMS = DEFAULT_PARAMS;
-}
 
 function startApp() {
   return new Promise((resolve, reject) => {
@@ -47,8 +20,15 @@ function startApp() {
     app.use(bodyParser.json());
     app.use(bodyParser.urlencoded({ extended: true }));
 
+    app.get('/heartbeat', (req, res) =>
+      res.send({
+        data: _.assign({ now: new Date().toISOString(), uptime: process.uptime() }, process.memoryUsage())
+      })
+    );
+
     app.use('*', (req, res, next) => {
       const user = basicAuth(req);
+      if (!user) return res.status(401).end();
       return getUser(user.name, user.pass)
         .then(usr => {
           if (!usr) return res.status(401).end();
@@ -102,17 +82,8 @@ function startApp() {
   });
 }
 
-function* startUp() {
-  yield Promise.all([
-    login(),
-    startApp()
-  ]);
-
-  return searcher(PARAMS);
-}
-
-connect().
-  then(Promise.coroutine(startUp))
+connect()
+  .then(startApp)
   .then(() => {
     console.log('started');
   })

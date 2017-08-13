@@ -17,8 +17,6 @@ const { send: sendFbMessage } = require('../services/fbmessage');
 
 const adapters = require('./adapters');
 
-const FREQUENCY = process.env.FREQUENCY ? parseInt(process.env.FREQUENCY, 10) : 30 * 60 * 1000;
-
 const scrap = Promise.coroutine(function* scrap(params) {
   let results = {};
 
@@ -47,25 +45,15 @@ function* alert(items = []) {
   return Promise.all(_.map(messengerRecipients, recipient => sendFbMessage(message, recipient)));
 }
 
-const start = Promise.coroutine(function* (params) {
-  try {
-    yield scrap(params);
-    const lastRun = yield getLastRun();
-    yield* alert(yield getLatestFlats(lastRun));
-    yield updateLastRun();
-
-    yield Promise.delay(FREQUENCY);
-    console.log('running again');
-    start(params).then();
-  } catch(err) {
-    console.error(err);
-    start(params).then();
-  }
+const run = Promise.coroutine(function* run(params) {
+  yield scrap(params);
+  const lastRun = yield getLastRun();
+  yield* alert(yield getLatestFlats(lastRun));
+  return updateLastRun();
 });
 
 function searcher(params) {
-  start(params).then();
-  return Promise.resolve();
+  return run(params);
 }
 
 module.exports = searcher;
