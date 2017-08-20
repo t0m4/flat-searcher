@@ -40,8 +40,8 @@ function* alert(items = []) {
   const notifs = yield getNotifications();
 
   const messengerRecipients = _.get(notifs, 'messenger.recipients', []);
-
-  const message = `Uj feltoltott kiado lakasok: \r\n${items.map(item => item.link + item.balcony ? ' *' : '').join('\r\n')}`;
+  const mapFn = item => `${item.link} ${(item.balcony ? ' *' : '')}`;
+  const message = `Uj feltoltott kiado lakasok: \r\n${items.map(mapFn).join('\r\n')}`;
 
   return Promise.all(_.map(messengerRecipients, recipient => sendFbMessage(message, recipient)));
 }
