@@ -1,3 +1,4 @@
 module.exports = [
-  require('./ingatlan-jofogas')
+  require('./ingatlan-jofogas'),
+  require('./dunahouse')
 ];

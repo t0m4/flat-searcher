@@ -17,18 +17,22 @@ function booleanFilter(toCompareWith, config) {
 
 const CONDITIONS = {
   rooms: (config, item) => {
+    if (!item.rooms) return true;
     const size = parseInt(item.rooms, 10);
     return minMaxFilter(size, config);
   },
   halfRooms: (config, item) => {
+    if (!item.halfRooms) return true;
     const size = parseInt(item.halfRooms, 10);
     return minMaxFilter(size, config);
   },
   price: (config, item) => {
+    if (!item.price) return true;
     const price = parseInt(item.price.split(' ').join(''), 10);
     return minMaxFilter(price, config);
   },
   location: (config, item) => {
+    if (!item.districts) return true;
     if (config.districts) {
       const loc = item.district.toLowerCase();
       return _.some(_.map(config.districts, district => district === loc));
@@ -36,9 +40,11 @@ const CONDITIONS = {
     return true;
   },
   animalFriendly: (config, item) => {
+    if (!item.animalFriendly) return true;
     return booleanFilter(item.animalFriendly, config);
   },
   balcony: (config, item) => {
+    if (!item.balcony) return true;
     return booleanFilter(item.balcony, config);
   }
 }
@@ -50,12 +56,19 @@ function runCondition(params, item) {
   };
 }
 
-function filter(params, arr, existingIds) {
-  return _.filter(arr, item => {
-    if (_.includes(existingIds, item.id)) return false;
+function filter(params, arr) {
+  const notEligibleIds = [];
+  const filtered = _.filter(arr, item => {
     const conditions = _.pick(CONDITIONS, _.keys(params));
-    return _.every(_.map(conditions, runCondition(params, item)))
+    const result = _.every(_.map(conditions, runCondition(params, item)));
+    if (!result) notEligibleIds.push(item.id);
+    return result;
   });
+
+  return {
+    filtered,
+    notEligibleIds
+  };
 }
 
 module.exports = _.curry(filter);

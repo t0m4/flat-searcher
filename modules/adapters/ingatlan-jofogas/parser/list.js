@@ -3,6 +3,8 @@ const Promise = require('bluebird');
 const cheerio = require('cheerio');
 const _ = require('lodash');
 
+const PER_PAGE_ITEM = 25;
+
 const PROPS = {
   id: ($element) => parseInt($element.find('.reListItem').attr('id')),
   link: ($element) => $element.find('.subject').attr('href'),
@@ -24,7 +26,7 @@ function getNext($) {
 
 function getTotal($) {
   const total = _.trim($('.re-all-count > strong.jfg-badge').text());
-  return parseInt(total.split(' ').join(''), 10);
+  return Math.ceil(parseInt(total.split(' ').join(''), 10) / PER_PAGE_ITEM);
 }
 
 function parseElement($) {

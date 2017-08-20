@@ -21,8 +21,10 @@
     "lodash": "^4.17.4",
     "mongo-querystring": "^4.1.1",
     "mongodb": "^2.2.31",
+    "object-hash": "^1.1.8",
     "promise-retry": "^1.1.1",
     "request": "^2.81.0",
-    "request-promise": "^4.2.1"
+    "request-promise": "^4.2.1",
+    "romanize": "^1.1.1"
   }
 }

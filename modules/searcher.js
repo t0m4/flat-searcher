@@ -29,8 +29,9 @@ const scrap = Promise.coroutine(function* scrap(params) {
     yield storeFlats(source, results[source]);
   }
 
+  console.info('Results with params:', JSON.stringify(params));
   _.forEach(results, (items, source) => {
-    console.info({ source, hits: items.length, params });
+    console.info({ source, hits: items.length });
   });
 });
 
@@ -40,7 +41,7 @@ function* alert(items = []) {
 
   const messengerRecipients = _.get(notifs, 'messenger.recipients', []);
 
-  const message = `Uj feltoltott kiado lakasok: \r\n${items.map(item => item.link).join('\r\n')}`;
+  const message = `Uj feltoltott kiado lakasok: \r\n${items.map(item => item.link + item.balcony ? ' *' : '').join('\r\n')}`;
 
   return Promise.all(_.map(messengerRecipients, recipient => sendFbMessage(message, recipient)));
 }
