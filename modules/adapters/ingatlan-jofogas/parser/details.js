@@ -17,31 +17,11 @@ function parseElement($, $element) {
   });
 }
 
-function extractObject(target, variable){
-  const chopFront = target.substring(target.search(variable) + variable.length, target.length);
-  const result = chopFront.substring(0, chopFront.search(';'));
-
-  return _.trim(result.replace(/(encodeURIComponent|\(|\)|\n|{|})/g, ''));
-}
-
-function htmlDetailObj($) {
-  const findAndClean = extractObject(_.trim($.html()),"var utag_data = ");
-  let asd = findAndClean.split(', ');
-  return _.reduce(asd, (obj, asdka) => {
-    const splitted = asdka.split(' : ');
-    obj[splitted[0]] = (splitted[1] || '').replace(/"/g, '');
-    return obj;
-  }, {});
-}
-
 function parse(response) {
   const $ = cheerio.load(response, { normalizeWhitespace: true });
   const $element = $('#main_content .main-content #vi');
 
-  const htmlDetailsObject = htmlDetailObj($)
-
   const parsed = parseElement($, $element);
-  parsed.date = new Date(htmlDetailsObject.date);
   return Promise.resolve({ data: parsed });
 }
 

@@ -17,22 +17,22 @@ function booleanFilter(toCompareWith, config) {
 
 const CONDITIONS = {
   rooms: (config, item) => {
-    if (!item.rooms) return true;
+    if (_.isUndefined(item.rooms)) return true;
     const size = parseInt(item.rooms, 10);
     return minMaxFilter(size, config);
   },
   halfRooms: (config, item) => {
-    if (!item.halfRooms) return true;
+    if (_.isUndefined(item.halfRooms)) return true;
     const size = parseInt(item.halfRooms, 10);
     return minMaxFilter(size, config);
   },
   price: (config, item) => {
-    if (!item.price) return true;
+    if (_.isUndefined(item.price)) return true;
     const price = parseInt(item.price.split(' ').join(''), 10);
     return minMaxFilter(price, config);
   },
   location: (config, item) => {
-    if (!item.districts) return true;
+    if (_.isUndefined(item.districts)) return true;
     if (config.districts) {
       const loc = item.district.toLowerCase();
       return _.some(_.map(config.districts, district => district === loc));
@@ -40,11 +40,11 @@ const CONDITIONS = {
     return true;
   },
   animalFriendly: (config, item) => {
-    if (!item.animalFriendly) return true;
+    if (_.isUndefined(item.animalFriendly)) return true;
     return booleanFilter(item.animalFriendly, config);
   },
   balcony: (config, item) => {
-    if (!item.balcony) return true;
+    if (_.isUndefined(item.balcony)) return true;
     return booleanFilter(item.balcony, config);
   }
 }
