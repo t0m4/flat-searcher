@@ -18,21 +18,10 @@ const { send: sendFbMessage } = require('../services/fbmessage');
 const adapters = require('./adapters');
 
 const scrap = Promise.coroutine(function* scrap(params) {
-  let results = {};
-
   for (let adapter of adapters) {
     const existing = yield getAllForSource(adapter.source);
-    results[adapter.source] = yield adapter.run(params, existing);
+    yield storeFlats(yield adapter.run(params, existing));
   }
-
-  for (let source in results) {
-    yield storeFlats(source, results[source]);
-  }
-
-  console.info('Results with params:', JSON.stringify(params));
-  _.forEach(results, (items, source) => {
-    console.info({ source, hits: items.length });
-  });
 });
 
 function* alert(items = []) {
