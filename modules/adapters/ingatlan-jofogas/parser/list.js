@@ -9,9 +9,9 @@ const PROPS = {
   id: ($element) => parseInt($element.find('.reListItem').attr('id')),
   link: ($element) => $element.find('.subject').attr('href'),
   title: ($element) => _.trim($element.find('.subject').text()),
-  price: ($element) => _.trim($element.find('.priceBox').text()),
-  rooms: ($element) => _.trim($element.find('.sizeRooms .rooms').text()),
-  flatSize: ($element) => _.trim($element.find('.sizeRooms .size').text()),
+  price: ($element) => parseInt(_.trim($element.find('.priceBox').text()).split(' ').join(''), 10),
+  rooms: ($element) => parseInt(_.trim($element.find('.sizeRooms .rooms').text()), 10),
+  flatSize: ($element) => parseInt(_.trim($element.find('.sizeRooms .size').text()).split(' ')[0], 10),
   location: ($element) => _.trim($element.find('.cityname').text()),
 };
 

@@ -6,7 +6,8 @@ const handleRetry = require('../../retry');
 function makeRequest(url) {
   return handleRetry(() => {
     return rp.get({
-      url
+      url,
+      timeout: 30000
     });
   });
 }

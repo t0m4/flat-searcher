@@ -28,8 +28,7 @@ const CONDITIONS = {
   },
   price: (config, item) => {
     if (_.isUndefined(item.price)) return true;
-    const price = parseInt(item.price.split(' ').join(''), 10);
-    return minMaxFilter(price, config);
+    return minMaxFilter(item.price, config);
   },
   location: (config, item) => {
     if (_.isUndefined(item.district) || !config.districts) return true;

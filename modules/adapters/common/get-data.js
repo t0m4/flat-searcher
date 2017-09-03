@@ -4,6 +4,8 @@ const _ = require('lodash');
 
 const details = require('./details');
 const filter = require('./filter');
+const defaultMakeRequest = require('./make-request');
+const validator = require('./validate');
 const { updateLastSeen, getFlat, storeNotEligible, isItemStoredAsNotEligible } = require('../../../services/mongo');
 
 const filterExisting = Promise.coroutine(function* (item, params, options) {
@@ -31,6 +33,10 @@ function factory(params, existingIds, options) {
       const populated = yield Promise.map(itemsToPopulate, (data) => {
         return details(data, options)
           .then(detailsData => _.defaults(data, detailsData.data))
+          /*.then(detailsData => {
+            validator.validate(detailsData);
+            return detailsData;
+          })*/
           .catch((err) => {
             console.error(err);
             return data;
@@ -52,6 +58,7 @@ function factory(params, existingIds, options) {
 
 function* getData(params, existingIds, options) {
   const now = Date.now();
+  options.makeRequest = options.makeRequest || defaultMakeRequest;
   let data = [];
   let newData;
   let shouldRun = true;

@@ -12,9 +12,9 @@ const PROPS = {
   },
   link: ($element) => `${BASE_URL}${$element.find('.moreDetailsBox a').attr('href')}`,
   title: ($element) => _.trim($element.find('h2[itemprop="name"]').text()),
-  price: ($element) => _.trim($element.find('.priceBox span[itemprop="price"]').text()),
+  price: ($element) => parseInt(_.trim($element.find('.priceBox span[itemprop="price"]').text().split(' ').join(''), 10)),
   rooms: ($element) => parseInt(_.trim($element.find('.listItemDatas .room .value').text().split(' ')[0]), 10),
-  flatSize: ($element) => _.trim($element.find('.listItemDatas .size .value').text())
+  flatSize: ($element) => parseInt(_.trim($element.find('.listItemDatas .size .value').text()).split('m2')[0], 10)
 };
 
 function getNext($) {

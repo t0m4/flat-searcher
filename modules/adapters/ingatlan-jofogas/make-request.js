@@ -9,7 +9,8 @@ function makeRequest(url) {
   return handleRetry(() => {
     return rp.get({
       url,
-      encoding: null
+      encoding: null,
+      timeout: 30000
     });
   })
   .then(res => {
