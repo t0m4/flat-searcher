@@ -32,12 +32,9 @@ const CONDITIONS = {
     return minMaxFilter(price, config);
   },
   location: (config, item) => {
-    if (_.isUndefined(item.districts)) return true;
-    if (config.districts) {
-      const loc = item.district.toLowerCase();
-      return _.some(_.map(config.districts, district => district === loc));
-    }
-    return true;
+    if (_.isUndefined(item.district) || !config.districts) return true;
+    const loc = item.district.toLowerCase();
+    return _.some(_.map(config.districts, district => district === loc));
   },
   animalFriendly: (config, item) => {
     if (_.isUndefined(item.animalFriendly)) return true;
