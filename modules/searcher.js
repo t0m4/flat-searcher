@@ -20,7 +20,7 @@ const adapters = require('./adapters');
 const scrap = Promise.coroutine(function* scrap(params) {
   for (let adapter of adapters) {
     const existing = yield getAllForSource(adapter.source);
-    yield storeFlats(yield adapter.run(params, existing));
+    yield storeFlats(adapter.source, yield adapter.run(params, existing));
   }
 });
 
