@@ -8,19 +8,20 @@ const { connect } = require('./services/mongo');
 
 const DEFAULT_PARAMS = {
   rooms: {
-    max: 1
+    max: 2
   },
   halfRooms: {
-    max: 1
+    max: 2
   },
   location: {
     districts: ['v', 'vi', 'vii', 'viii']
   },
   price: {
-    max: 100000,
-    min: 30000
+    max: 110000,
+    min: 90000
   },
-  //balcony: true
+  balcony: true,
+  animalFriendly: true
 };
 
 let PARAMS = {};
