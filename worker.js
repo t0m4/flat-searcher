@@ -14,7 +14,7 @@ const DEFAULT_PARAMS = {
     max: 2
   },
   location: {
-    districts: ['v', 'vi', 'vii', 'viii']
+    districts: ['v', 'vi', 'vii', 'viii', 'xi']
   },
   price: {
     max: 110000,
