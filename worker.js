@@ -20,7 +20,6 @@ const DEFAULT_PARAMS = {
     max: 110000,
     min: 90000
   },
-  balcony: true,
   animalFriendly: true
 };
 
